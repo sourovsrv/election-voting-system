@@ -2,62 +2,54 @@ if exist drop database election;
 create database election;
 use election;
 
-//////////////////////
 create table postinfo(
-Sno int unsigned not null,
-Eid varchar (10) null,
-Postid varchar (30) null,
-NoOfPost int null,
-primary key (Sno)
+eid varchar (200) not null,
+postid varchar (200) not null,
+noofpost varchar(200) null,
+primary key (eid,postid)
 ) engine=innodb;
 
 
-/////////////////////
-
 create table candidateinfo(
-CID varchar(25) not null,
-Name varchar(50) null,
-DOB date,
-address varchar(100) null,
-primary key (CID)
+cid varchar(200) not null,
+name varchar(200) not null,
+dob varchar(200),
+address varchar(200) null,
+primary key (cid)
 ) engine =innodb;
 
-/////////////////////
 create table voterinfo(
-VID varchar(20) not null,
-name varchar (50) null,
-DOB date,
-pass varchar(20),
-primary key (VID)
+vid varchar(200) not null,
+name varchar (200) null,
+dob varchar(200) null,
+pass varchar(200),
+primary key (vid)
 ) engine = innodb;
-///////////////////////
 
 create table velectionreg(
-VID varchar(20) not null,
-Eid varchar (10) null,
-status int unsigned,
-primary key (VID,Eid)
+vid varchar(200) not null,
+eid varchar (200) not null,
+status varchar(200) null,
+primary key (vid,eid)
 ) engine = innodb;
-
-/////////////////////
 
 create table celectionreg(
-Eid varchar (10) null,
-Postid varchar (30) null,
-CID varchar(25) not null,
-primary key (Eid,postid,cid)
+eid varchar (200) not null,
+postid varchar (200) not null,
+cid varchar(200) not null,
+primary key (eid,postid,cid),
+foreign key (eid, postid) references postinfo (eid, postid),
+foreign key (cid) references candidateinfo (cid)
 ) engine = innodb;
 
-//////////////////////
 create table votecast(
-VID varchar(20) not null,
-Eid varchar (10) null,
-Postid varchar (30) null,
-CID varchar(25) not null,
-primary key (vid,Eid,postid,cid)
+vid varchar(200) not null,
+eid varchar (200) not null,
+postid varchar (200) null,
+cid varchar(200) not null,
+primary key (vid,eid,postid,cid)
 ) engine = innodb;
 
-/////////////////////
 
 alter table velectionreg add constraint fkvelectionregvid foreign key (vid) references voterinfo (vid);
 
@@ -72,3 +64,12 @@ alter table celectionreg add constraint fkcelectionregcid foreign key (cid) refe
 alter table votecast add constraint fkvotecastgvid foreign key (vid) references voterinfo (vid);
 
 alter table votecast add constraint fkvotecastcid foreign key (cid) references candidateinfo (cid);
+
+
+select cid, count(*) as count from votecast group by cid order by count desc;
+
+select cid,max(count(*)) from votecast group by cid;
+
+select name, eid, postid, celectionreg.cid from celectionreg, candidateinfo where candidateinfo.cid=celectionreg.cid;
+
+select cid, count(*) as count from votecast where eid='E2014' and postid='President' group by cid order by count desc;
